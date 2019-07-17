@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">StickerCounter</string>
+    <string name="button_to_db_activity">Добавить в базу</string>
+    <string name="sticker_counter_application">Sticker Counter Application</string>
+    <string name="second_activity_header">Добавление продажи в базу</string>
+    <string name="quantity_second">Количество</string>
+    <string name="price_second">Цена (за шт.)</string>
+    <string name="addDealButton">Добавить продажу</string>
+    <string name="sendMsgButton">Похвастаться?</string>
+    <string name="show_db_entries">Удалить запись (по id)</string>
+    <string name="date_view">Дата</string>
+    <string name="statistics_fiels">Статистика</string>
+    <string name="last_sells">\nПоследние продажи</string>
+    <string-array name="products_array">
+        <item>Windows 10 Наклейка</item>
+        <item>Windows 7 Наклейка</item>
+        <item>Windows 10 Ключ</item>
+        <item>Windows 7 Ключ</item>
+        <item>Office 2016 PP Ключ</item>
+        <item>Office 2019 PP Ключ</item>
+        <item>Другое</item>
+    </string-array>
+</resources>
