@@ -2,59 +2,90 @@ package ru.loveandpepper.stickercounter;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.ContentValues;
-import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
+import java.net.URL;
+import java.nio.charset.Charset;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import static ru.loveandpepper.stickercounter.R.string.rub;
+
 
 public class WorkWithDbActivity extends AppCompatActivity {
-    private String productString;
-    private EditText price;
-    private int productPrice;
-    private EditText quantity;
-    private ProductFinder productFinder = new ProductFinder();
+
     private DataBaseOperations dataBaseOperations;
     private SQLiteDatabase database;
+    public TextView usdcurrency;
+    public TextView statview;
+    double value_usd;
+    double value_usd_dhgate;
+
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_work_with_db);
-/*        Intent productIntent = getIntent();
-        TextView product = findViewById(R.id.productfield);
-        quantity = findViewById(R.id.editText_Quantity);
-        productString = productIntent.getStringExtra("product_name");
-        product.setText(productString);
-        price = findViewById(R.id.editText_Price);
-        productPrice = Integer.parseInt(productFinder.getProduct(productString).get(1));
-        price.setHint(productPrice + " руб. (за штуку!)");*/
+        statview = findViewById(R.id.statview);
         dataBaseOperations = new DataBaseOperations(this);
         database = dataBaseOperations.getWritableDatabase();
+        usdcurrency = findViewById(R.id.usd_cur_textView);
+
+        usdValueChecker usdValueChecker = new usdValueChecker();
+        usdValueChecker.execute();
     }
 
-    public void talkToSomebody(View view) {
-/*        Intent sendMessage = new Intent();
-        sendMessage.setType("text/plain");
-        String msg = "Продали тут " + productString + " в количестве " + quantity + " штук. Эта программка пока не знает, радоваться ли такому количеству. Но позже мы её научим =)";
-        sendMessage.putExtra(Intent.EXTRA_TEXT, msg);
-        Intent chooseAlways = Intent.createChooser(sendMessage, "Через что отправим?");
-        startActivity(chooseAlways);*/
+    public void calculateEverything(){
+        usdcurrency.setText(String.format("%s %s %s", getString(R.string.kurs_po_cb), Math.round(value_usd*100.00)/100.00, getString(rub)));
+        value_usd_dhgate = value_usd + value_usd*0.059;
+        StringBuilder stb = new StringBuilder();
+        stb.append(String.format(("%s %s %s"),getString(R.string.kurs_dhgate), Math.round(value_usd_dhgate*100.00)/100.00,getString(rub)));
+        statview.setText(stb);
+
+    }
+
+
+
+    class usdValueChecker extends AsyncTask<Void, Double, Double> {
+
+        @Override
+        protected Double doInBackground(Void... voids) {
+            try {
+                JSONObject url = new JSONObject(IOUtils.toString(new URL("https://www.cbr-xml-daily.ru/daily_json.js"), Charset.forName("UTF-8")));
+                url = (JSONObject) url.get("Valute");
+                url = (JSONObject) url.get("USD");
+                return (double) url.get("Value");
+
+            }
+            catch (Exception e) {
+                System.out.println("!!!!!!!!!!!!!!!!" + e.getMessage() );
+                return null;
+            }
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            usdcurrency.setText("Курс загружается");
+        }
+
+        @Override
+        protected void onPostExecute(Double s) {
+            super.onPostExecute(s);
+            value_usd = s;
+            calculateEverything();
+        }
+    }
+
+
 
 // Код чтения из таблицы, чисто для теста:
-        Cursor cursor = database.query("sells", null, null, null, null, null, null);
+/*        Cursor cursor = database.query("sells", null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             int idIndex = cursor.getColumnIndex("_id");
             int nameIndex = cursor.getColumnIndex("product");
@@ -77,5 +108,5 @@ public class WorkWithDbActivity extends AppCompatActivity {
 
     public void processSQL(View view) {
 
-    }
+    }*/
 }

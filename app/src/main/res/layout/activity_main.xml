@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#B9DCE2"
     android:orientation="vertical"
     android:padding="16dp"
     tools:context="ru.loveandpepper.stickercounter.MainActivity">
@@ -88,6 +87,7 @@
             android:layout_gravity="center"
             android:layout_margin="10dp"
             android:layout_weight="50"
+            android:onClick="statStart"
             android:text="@string/statistics_fiels" />
     </LinearLayout>
 

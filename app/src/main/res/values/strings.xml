@@ -2,7 +2,7 @@
     <string name="app_name">StickerCounter</string>
     <string name="button_to_db_activity">Добавить в базу</string>
     <string name="sticker_counter_application">Sticker Counter Application</string>
-    <string name="second_activity_header">Добавление продажи в базу</string>
+    <string name="second_activity_header">Статистика</string>
     <string name="quantity_second">Количество</string>
     <string name="price_second">Цена (за шт.)</string>
     <string name="addDealButton">Добавить продажу</string>
@@ -11,6 +11,11 @@
     <string name="date_view">Дата</string>
     <string name="statistics_fiels">Статистика</string>
     <string name="last_sells">\nПоследние продажи</string>
+    <string name="usd_currency">usd_currency</string>
+    <string name="kurs_po_cb">Курс $ по ЦБ: </string>
+    <string name="rub"> руб.</string>
+    <string name="statview">statview</string>
+    <string name="kurs_dhgate">Курс DHgate: ~ </string>
     <string-array name="products_array">
         <item>Windows 10 Наклейка</item>
         <item>Windows 7 Наклейка</item>

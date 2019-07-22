@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.AndroidViewModel;
 
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -27,6 +28,9 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,13 +58,11 @@ public class MainActivity extends AppCompatActivity {
         editQuantity = findViewById(R.id.editText_Quantity);
         getCurrentTime();
         updateStatField();
+
     }
 
 
     public void AddSellToBase(View v) {
-/*        Intent intent1 = new Intent(this, WorkWithDbActivity.class);
-        intent1.putExtra("product_name", selectedProduct);
-        startActivity(intent1);*/
         try {
             String sop = spinnerOfProducts.getSelectedItem().toString();
             int epr = Integer.parseInt(editPrice.getText().toString());
@@ -88,8 +90,7 @@ public class MainActivity extends AppCompatActivity {
         statisticsField = findViewById(R.id.statisticsField);
         StringBuilder stringBuilder = new StringBuilder();
         for (String s : readFromDatabase()) {
-            stringBuilder.append(s + "\n");
-            stringBuilder.append("--------------\n");
+            stringBuilder.append(s).append("\n").append("--------------\n");
         }
         statisticsField.setText(stringBuilder.toString());
 
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void getCurrentTime() {
-        SimpleDateFormat sdfDate = new SimpleDateFormat("d MMMM yyyy", myDateFormatSymbols);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdfDate = new SimpleDateFormat("d MMMM yyyy", myDateFormatSymbols);
         Date now = new Date();
         String strDate = sdfDate.format(now);
         date = findViewById(R.id.currentDate);
@@ -182,6 +183,12 @@ public class MainActivity extends AppCompatActivity {
                 (dialog, which) -> dialog.cancel());
 
         alertDialog.show();
+    }
+
+    public void statStart(View view) {
+        Intent intent1 = new Intent(this, WorkWithDbActivity.class);
+        startActivity(intent1);
+
     }
 }
 

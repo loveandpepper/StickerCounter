@@ -12,4 +12,6 @@ public class ToastMaker {
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
+
+
 }

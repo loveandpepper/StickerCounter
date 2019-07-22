@@ -1,14 +1,16 @@
 package ru.loveandpepper.stickercounter;
 
-import android.os.Build;
+import android.os.AsyncTask;
+import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
+import org.apache.commons.io.IOUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import org.json.JSONObject;
+
+
+import java.net.URL;
+import java.nio.charset.Charset;
+
 
 public class ProductFinder {
 /*    public Map<String, Integer> getProduct (final String selected){
@@ -24,6 +26,5 @@ public class ProductFinder {
         ArrayList<String> collect = (ArrayList<String>) result.entrySet().stream().filter(x -> x.getKey().equals(selected)).map(Map.Entry::getKey).collect(Collectors.toList());
         collect.add(String.valueOf(result.get(collect.get(0))));*//*
         return r;*/
-    }
 
-
+}
