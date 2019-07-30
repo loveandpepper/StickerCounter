@@ -27,7 +27,7 @@ public class DataBaseOperations extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS sells");
+            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DEFAULT_TABLE);
             onCreate(sqLiteDatabase);
 
     }

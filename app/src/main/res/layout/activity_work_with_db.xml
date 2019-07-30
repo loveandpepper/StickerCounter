@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,16 +12,23 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/second_activity_header"
+        android:textColor="#1E90FF"
         android:layout_marginTop="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
     <TextView
         android:id="@+id/usd_cur_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="16dp"
+        android:textAlignment="center"
+        android:layout_weight="50"
+        android:layout_margin="10dp"
         android:text="@string/usd_currency"
+        android:textStyle="bold"
         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
     <TextView
@@ -30,8 +36,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="10dp"
+        android:layout_weight="50"
+        android:layout_marginRight="10dp"
+        android:textAlignment="center"
         android:text="@string/statview"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+</LinearLayout>
+
+    <TextView
+        android:id="@+id/monthsells"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="5"
+        android:layout_margin="8dp"
+        android:text="@string/month_sells" />
+
+    <TextView
+        android:id="@+id/marginal_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/monthmarginal"
+        android:textAlignment="center"
+        android:textStyle="bold" />
+
+    <lecho.lib.hellocharts.view.PieChartView
+        android:id="@+id/pie_chart"
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:layout_weight="6" />
 
 </LinearLayout>

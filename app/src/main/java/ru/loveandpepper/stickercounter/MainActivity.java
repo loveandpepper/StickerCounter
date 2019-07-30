@@ -22,6 +22,7 @@ import android.view.Gravity;
 import android.view.View;
 
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 
 import android.widget.LinearLayout;
@@ -32,6 +33,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.text.DateFormatSymbols;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,64 +42,109 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private Spinner spinnerOfProducts;
-    private DataBaseOperations dataBaseOperations;
-    private SQLiteDatabase database;
+    public static SQLiteDatabase database;
     private EditText editPrice;
     private EditText editQuantity;
     private TextView date;
-    private TextView statisticsField;
+    public static SimpleDateFormat sdfDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        dataBaseOperations = new DataBaseOperations(this);
+        DataBaseOperations dataBaseOperations = new DataBaseOperations(this);
         database = dataBaseOperations.getWritableDatabase();
         spinnerOfProducts = findViewById(R.id.products);
         editPrice = findViewById(R.id.editText_Price);
         editQuantity = findViewById(R.id.editText_Quantity);
         getCurrentTime();
         updateStatField();
+        priceSetterForItem();
+
 
     }
 
+    public void priceSetterForItem(){
+        spinnerOfProducts.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {      //Listener для спиннера. Подставляет цену по умолчанию для продукта.
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0: editPrice.setText("1500"); break;
+                    case 1: editPrice.setText("1300"); break;
+                    case 2: editPrice.setText("1100"); break;
+                    case 3: editPrice.setText("1000"); break;
+                    case 4: editPrice.setText("1500"); break;
+                    case 5: editPrice.setText("1900"); break;
+                    case 6: editPrice.setText(null); break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
+
+    public void addOperation (int epr, int equ, String sop, View v){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("product", sop);
+        contentValues.put("price", epr);
+        contentValues.put("quantity", equ);
+        contentValues.put("date", date.getText().toString());
+        database.insert(DataBaseOperations.DEFAULT_TABLE, null, contentValues);
+        updateStatField();
+        editQuantity.setText(null);
+        editPrice.setText(null);
+        new ToastMaker().showToast(this, "Успешно добавлено :)");
+    }
 
     public void AddSellToBase(View v) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);   //скрывает клаву по клику
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
         try {
             String sop = spinnerOfProducts.getSelectedItem().toString();
             int epr = Integer.parseInt(editPrice.getText().toString());
             int equ = Integer.parseInt(editQuantity.getText().toString());
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("product", sop);
-            contentValues.put("price", epr);
-            contentValues.put("quantity", equ);
-            contentValues.put("date", date.getText().toString());
-            database.insert(DataBaseOperations.DEFAULT_TABLE, null, contentValues);
-            updateStatField();
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);   //скрывает клаву по клику
-            if (imm != null) {
-                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            if (epr < 450) {                                                  //если вбита цена менее 450 руб, то возникает Alert, который в случае подтверждения перенаправляет в addOperation
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Тут нет ошибки?")
+                        .setMessage("Цена продукта очень низкая")
+                        .setCancelable(false)
+                        .setPositiveButton("Да, тут ошибка", (dialog, id) -> {
+                            dialog.cancel();
+                            editQuantity.setText(null);
+                            editPrice.setText(null);
+                        })
+                        .setNegativeButton("Всё правильно!", (dialog, id) -> {
+                            addOperation(epr, equ, sop, v);
+                            dialog.dismiss();});
+                AlertDialog alert = builder.create();
+                alert.show();
             }
-            editQuantity.setText(null);
-            editPrice.setText(null);
-            new ToastMaker().showToast(this, "Успешно добавлено :)");
+            else {
+                addOperation(epr, equ, sop, v);
+            }
         } catch (Exception e) {
             new ToastMaker().showToast(this, "Наверное что-то не заполнено, случилось исключание :(");
         }
     }
 
+
     public void updateStatField() {
-        statisticsField = findViewById(R.id.statisticsField);
+        TextView statisticsField = findViewById(R.id.statisticsField);
         StringBuilder stringBuilder = new StringBuilder();
-        for (String s : readFromDatabase()) {
-            stringBuilder.append(s).append("\n").append("--------------\n");
+        for (Product s : readFromDatabase()) {
+            stringBuilder.append(s.toString()).append("\n").append("--------------\n");
         }
         statisticsField.setText(stringBuilder.toString());
 
     }
 
-    public ArrayList<String> readFromDatabase() {
-        ArrayList<String> datalist = new ArrayList<>();
+    public static ArrayList<Product> readFromDatabase() {
+        ArrayList<Product> datalist = new ArrayList<>();
         Cursor cursor = database.query(DataBaseOperations.DEFAULT_TABLE, null, null, null, null, null, "_id DESC");
         if (cursor.moveToFirst()) {
             int idIndex = cursor.getColumnIndex("_id");
@@ -106,15 +153,16 @@ public class MainActivity extends AppCompatActivity {
             int quantityIndex = cursor.getColumnIndex("quantity");
             int dateIndex = cursor.getColumnIndex("date");
             do {
-                datalist.add("id " + cursor.getInt(idIndex) + " | " +
-                        cursor.getString(nameIndex) + " | " +
-                        cursor.getInt(priceIndex) + " руб. | " +
-                        cursor.getInt(quantityIndex) + " шт. | \n" +
-                        cursor.getString(dateIndex) + " | Итог: " + cursor.getInt(priceIndex) * cursor.getInt(quantityIndex) + " руб.");
+                Date intoList = null;
+                try {
+                    intoList = sdfDate.parse(cursor.getString(dateIndex));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                int total = cursor.getInt(priceIndex) * cursor.getInt(quantityIndex);
+                datalist.add(new Product(cursor.getInt(idIndex), cursor.getString(nameIndex), cursor.getInt(priceIndex), cursor.getInt(quantityIndex), intoList, total));
             }
             while (cursor.moveToNext());
-        } else {
-            datalist.add("Нет записей!");
         }
         cursor.close();
         return datalist;
@@ -122,14 +170,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void getCurrentTime() {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdfDate = new SimpleDateFormat("d MMMM yyyy", myDateFormatSymbols);
+        sdfDate = new SimpleDateFormat("d MMMM yyyy", myDateFormatSymbols);
         Date now = new Date();
         String strDate = sdfDate.format(now);
         date = findViewById(R.id.currentDate);
         date.setText(strDate);
     }
 
-    private static DateFormatSymbols myDateFormatSymbols = new DateFormatSymbols() {
+    public static DateFormatSymbols myDateFormatSymbols = new DateFormatSymbols() {
         @Override
         public String[] getMonths() {
             return new String[]{"января", "февраля", "марта", "апреля", "мая", "июня",
@@ -189,6 +237,11 @@ public class MainActivity extends AppCompatActivity {
         Intent intent1 = new Intent(this, WorkWithDbActivity.class);
         startActivity(intent1);
 
+    }
+
+    public void exportButtonClick(View view) {
+        Intent exportIntent = new Intent(this, Export_activity.class);
+        startActivity(exportIntent);
     }
 }
 
