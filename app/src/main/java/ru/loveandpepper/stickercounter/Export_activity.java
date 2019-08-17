@@ -1,74 +1,81 @@
 package ru.loveandpepper.stickercounter;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
+import androidx.appcompat.app.AppCompatActivity;
+
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.TimePickerDialog;
-import android.content.Context;
-import android.content.DialogInterface;
+
+
 import android.content.Intent;
-import android.content.pm.PackageManager;
+
+
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
+
 import android.os.Bundle;
-import android.os.Environment;
+
 import android.os.ParcelFileDescriptor;
-import android.text.format.DateUtils;
-import android.util.Log;
+
 import android.view.View;
-import android.widget.DatePicker;
-import android.widget.EditText;
+
+import android.widget.ArrayAdapter;
+
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.karan.churi.PermissionManager.PermissionManager;
 import com.opencsv.CSVWriter;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+
 import java.io.OutputStreamWriter;
-import java.net.URI;
+
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
+
 import java.util.Date;
-import java.util.List;
+import java.util.Objects;
 
-import de.siegmar.fastcsv.writer.CsvWriter;
+import ru.loveandpepper.stickercounter.callback_dialogs.AddCallbackDialog;
 
-import static android.os.Environment.getExternalStoragePublicDirectory;
-import static android.os.Environment.getExternalStorageState;
 
 
 public class Export_activity extends AppCompatActivity {
 
-    TextView date1;
-    TextView date2;
+    TextView date1, date2;
     Calendar calendar;
     int day, month, year;
-    SQLiteDatabase database;
+    public static SQLiteDatabase database;
     PermissionManager permissionManager;
     private static final int WRITE_REQUEST_CODE = 43;
     public Uri uri;
-    Date d1;
-    Date d2;
+    Date d1, d2;
+    private static ListView callBackListView;
+    private static String phoneNum, nameForNum;
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+    public void setPhoneNum(String phoneNum) {
+        Export_activity.phoneNum = phoneNum;
+    }
+    public String getNameForNum() {
+        return nameForNum;
+    }
+    public void setNameForNum(String nameForNum) {
+        Export_activity.nameForNum = nameForNum;
+    }
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -85,8 +92,17 @@ public class Export_activity extends AppCompatActivity {
         permissionManager = new PermissionManager() {
         };
         permissionManager.checkAndRequestPermissions(this);
+        callBackListView = findViewById(R.id.callback_listview);
+        callBackListView.setDivider(new ColorDrawable(this.getResources().getColor(R.color.transparent))); // устанавливаем Divider для строчек в ListView
+        callBackListView.setDividerHeight(15);
         setDates();
+        callBackListUpdate();
+        if (Objects.equals(getIntent().getStringExtra("Status"), "Added")){ //если активити вызвана из CallLogClass и булеан true, то снова запускается AddCallbackDialog
+            new AddCallbackDialog().show(getSupportFragmentManager(), "AddCallbackDialog");
+        }
     }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -135,10 +151,8 @@ public class Export_activity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println(e.getMessage() + e.getCause());
-                System.out.println("!!!!!PROBLEMS!!!!!");
             }
-        }
-        else {
+        } else {
             new ToastMaker().showToast(this, "Даты пустые!");
         }
 
@@ -152,8 +166,7 @@ public class Export_activity extends AppCompatActivity {
                 uri = resultData.getData();
                 exporter();
             }
-        }
-        else {
+        } else {
             new ToastMaker().showToast(this, "Возникла ошибка при создании файла!");
         }
     }
@@ -169,7 +182,7 @@ public class Export_activity extends AppCompatActivity {
                     CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                     CSVWriter.DEFAULT_LINE_END
             );
-            writer.writeNext(new String[] {"id", "Продукт", "Цена", "Количество", "Дата", "Итого"});
+            writer.writeNext(new String[]{"id", "Продукт", "Цена", "Количество", "Дата", "Итого"});
             ArrayList<Product> products = MainActivity.readFromDatabase();
             boolean count = false;
             for (Product ex : products) {
@@ -181,8 +194,9 @@ public class Export_activity extends AppCompatActivity {
             writer.close();
             if (count) {
                 new ToastMaker().showToast(this, "База данных успешно сохранена в CSV файл.");
+            } else {
+                new ToastMaker().showToast(this, "Записей за эти даты не нашлось!");
             }
-            else {new ToastMaker().showToast(this, "Записей за эти даты не нашлось!");}
 
 
         } catch (Exception e) {
@@ -190,6 +204,55 @@ public class Export_activity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    public ArrayList<CallBackUnit> callBackItems() {
+        ArrayList<CallBackUnit> list = new ArrayList<>();
+        Cursor cursor = database.query(DataBaseOperations.CALLBACK_TABLE, null, null, null, null, null, "_id DESC");
+        if (cursor.moveToFirst()) {
+            int phoneIndex = cursor.getColumnIndex("phone");
+            int nameIndex = cursor.getColumnIndex("name");
+            int commentIndex = cursor.getColumnIndex("comment");
+            do {
+                list.add(new CallBackUnit(cursor.getString(phoneIndex), cursor.getString(nameIndex), cursor.getString(commentIndex)));
+            }
+            while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
+
+
+    public void callBackListUpdate() {                                                               //обновления LISTView и обработка нажатий на него
+        ArrayAdapter<CallBackUnit> arrayAdapter = new ArrayAdapter<>(this, R.layout.mylistview, callBackItems());
+        callBackListView.setAdapter(arrayAdapter);
+        callBackListView.setOnItemClickListener((adapterView, view, i, l) -> {                       //обработка нажатий на item в листе
+            Intent callIntent = new Intent(Intent.ACTION_DIAL);
+            callIntent.setData(Uri.parse("tel:" + callBackItems().get(i).getPhoneNumber()));
+            startActivity(callIntent);                                                               //ВСЕ разрешения проверяет permissionManager в методе onCreate
+        });
+
+        callBackListView.setOnItemLongClickListener((adapterView, view, i, l) -> {                   //обработка долгих нажатий (Удаление записей)
+            AlertDialog.Builder adb = new AlertDialog.Builder(Export_activity.this);
+            adb.setTitle("Удалить?")
+            .setMessage("Запись по поводу звонка " + callBackItems().get(i).getName() + " больше не нужна?")
+                    .setPositiveButton("Удалить", (dial, phone) -> {
+                        database.execSQL("DELETE FROM " + DataBaseOperations.CALLBACK_TABLE + " WHERE phone = '" + callBackItems().get(i).getPhoneNumber() + "' AND comment = '" + callBackItems().get(i).getComment() + "'");
+                        callBackListUpdate();
+                        dial.cancel();
+                    })
+                    .setNegativeButton("Не удалять!", (dialog, phone) -> {
+                        dialog.cancel();});
+            AlertDialog alert = adb.create();
+            alert.show();
+            return true;
+        });
+    }
+
+    public void onClickAdd(View view) {
+        AddCallbackDialog addCallbackDialog = new AddCallbackDialog();
+        addCallbackDialog.show(getSupportFragmentManager(), "AddCallbackDialog");
+    }
+
 }
 
 

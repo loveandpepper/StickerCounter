@@ -1,13 +1,12 @@
 <resources>
     <string name="app_name">Sticker Counter</string>
     <string name="button_to_db_activity">Добавить в базу</string>
-    <string name="sticker_counter_application">Sticker Counter Application</string>
+    <string name="sticker_counter_application">SCA 1.1</string>
     <string name="second_activity_header">Статистика</string>
     <string name="quantity_second">Количество</string>
     <string name="price_second">Цена (за шт.)</string>
     <string name="addDealButton">Добавить продажу</string>
-    <string name="sendMsgButton">Похвастаться?</string>
-    <string name="show_db_entries">Удалить запись (по id)</string>
+    <string name="show_db_entries">Удалить запись</string>
     <string name="date_view">Дата</string>
     <string name="statistics_fiels">Статистика</string>
     <string name="last_sells">\nПоследние продажи</string>
@@ -21,8 +20,16 @@
     <string name="export_btn">Экспорт</string>
     <string name="startdate">Выбор начальной даты</string>
     <string name="enddate">Выбор конечной даты</string>
-    <string name="export_header">Экспорт</string>
+    <string name="export_header">Экспорт базы продаж</string>
     <string name="export">Экспорт</string>
+    <string name="callback_list">Список пуст</string>
+    <string name="call_list_header">Кому перезвонить:</string>
+    <string name="callback_add_buttontext">Добавить CallBack</string>
+    <string name="comment">Комментарий</string>
+    <string name="callback_name">Имя</string>
+    <string name="callback_phonenum">Номер телефона</string>
+    <string name="lastCalls">Последние 15 вызовов</string>
+    <string name="callbackandexport">Экспорт и CallBack</string>
     <string-array name="products_array">
         <item>Windows 10 Наклейка</item>
         <item>Windows 7 Наклейка</item>
@@ -30,6 +37,8 @@
         <item>Windows 7 Ключ</item>
         <item>Office 2016 PP Ключ</item>
         <item>Office 2019 PP Ключ</item>
+        <item>OEM-Пакет Windows 10</item>
         <item>Другое</item>
     </string-array>
+
 </resources>

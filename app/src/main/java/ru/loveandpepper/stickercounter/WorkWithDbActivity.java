@@ -3,7 +3,6 @@ package ru.loveandpepper.stickercounter;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -114,7 +113,7 @@ public class WorkWithDbActivity extends AppCompatActivity {
                 return (double) url.get("Value");
 
             } catch (Exception e) {
-                System.out.println("!!!!!!!!!!!!!!!!" + e.getMessage());
+                new ToastMaker().showToast(WorkWithDbActivity.this, "Ошибка! " + e.getMessage());
                 return null;
             }
         }

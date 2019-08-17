@@ -18,9 +18,6 @@ public class Product {
     private Date date;
     private int total;
 
-    public Product() {
-    }
-
     public int getId() {
         return id;
     }

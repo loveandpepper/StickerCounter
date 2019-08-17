@@ -75,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
                     case 3: editPrice.setText("1000"); break;
                     case 4: editPrice.setText("1500"); break;
                     case 5: editPrice.setText("1900"); break;
-                    case 6: editPrice.setText(null); break;
+                    case 6: editPrice.setText("2800"); break;
+                    case 7: editPrice.setText(null); break;
                 }
             }
 
@@ -202,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
         input.setInputType(3);
         input.setLayoutParams(paramDate);
         alertDialog.setView(input);
-        /*alertDialog.setIcon(R.drawable.key);*/
+        alertDialog.setIcon(R.drawable.ic_delete);
 
         alertDialog.setPositiveButton("Удалить",
                 (dialog, which) -> {
