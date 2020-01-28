@@ -23,10 +23,12 @@ import android.view.View;
 
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -40,13 +42,15 @@ import java.util.Date;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener{
     private Spinner spinnerOfProducts;
     public static SQLiteDatabase database;
     private EditText editPrice;
     private EditText editQuantity;
     private TextView date;
     public static SimpleDateFormat sdfDate;
+    private int spinInt;
+    private Switch aSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +64,10 @@ public class MainActivity extends AppCompatActivity {
         getCurrentTime();
         updateStatField();
         priceSetterForItem();
-
+        aSwitch = findViewById(R.id.switch_beznal);
+        if (aSwitch != null) {
+            aSwitch.setOnCheckedChangeListener(this);
+        }
 
     }
 
@@ -68,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         spinnerOfProducts.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {      //Listener для спиннера. Подставляет цену по умолчанию для продукта.
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                aSwitch.setChecked(false);
                 switch (i){
                     case 0: editPrice.setText("1500"); break;
                     case 1: editPrice.setText("1300"); break;
@@ -78,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                     case 6: editPrice.setText("2800"); break;
                     case 7: editPrice.setText(null); break;
                 }
+                spinInt = Integer.valueOf(String.valueOf(editPrice.getText()));
             }
 
             @Override
@@ -170,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @SuppressLint("SimpleDateFormat")
     public void getCurrentTime() {
         sdfDate = new SimpleDateFormat("d MMMM yyyy", myDateFormatSymbols);
         Date now = new Date();
@@ -244,7 +254,19 @@ public class MainActivity extends AppCompatActivity {
         Intent exportIntent = new Intent(this, Export_activity.class);
         startActivity(exportIntent);
     }
-}
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        double processed = spinInt*0.94;
+        if (isChecked) {
+            editPrice.setText(String.valueOf((int)processed));
+        } else {
+            editPrice.setText(String.valueOf(spinInt));
+        }
+    }
+
+    }
+
 
 
 

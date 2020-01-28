@@ -38,15 +38,29 @@
 
     </LinearLayout>
 
-
-    <Spinner
-        android:id="@+id/products"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:entries="@array/products_array"
-        android:spinnerMode="dialog" />
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/products"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:layout_gravity="center"
+            android:entries="@array/products_array"
+            android:spinnerMode="dialog" />
+
+        <Switch
+            android:id="@+id/switch_beznal"
+            android:layout_width="87dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:layout_gravity="center"
+            android:text="Б/Н" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -147,5 +161,7 @@
 
         </LinearLayout>
     </ScrollView>
+
+
 
 </LinearLayout>
