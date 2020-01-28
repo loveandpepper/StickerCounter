@@ -258,8 +258,10 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         double processed = spinInt*0.94;
+        if (Integer.parseInt(String.valueOf(editPrice.getText())) != spinInt){
+            processed = Integer.parseInt(String.valueOf(editPrice.getText()))*0.94;}
         if (isChecked) {
-            editPrice.setText(String.valueOf((int)processed));
+                editPrice.setText(String.valueOf((int)processed));
         } else {
             editPrice.setText(String.valueOf(spinInt));
         }
