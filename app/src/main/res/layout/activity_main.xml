@@ -45,7 +45,7 @@
 
         <Spinner
             android:id="@+id/products"
-            android:layout_width="230dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="15dp"
@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="15dp"
-            android:text="Б/Н" />
+            android:text="@string/beznal_string" />
 
     </LinearLayout>
 
