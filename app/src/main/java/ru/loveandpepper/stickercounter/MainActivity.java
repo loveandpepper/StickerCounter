@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                 addOperation(epr, equ, sop, v);
             }
         } catch (Exception e) {
-            new ToastMaker().showToast(this, "Наверное что-то не заполнено, случилось исключание :(");
+            new ToastMaker().showToast(this, "Наверное что-то не заполнено, случилось исключение :(");
         }
     }
 
@@ -263,11 +263,12 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
         if (isChecked) {
                 editPrice.setText(String.valueOf((int)processed));
         } else {
-            editPrice.setText(String.valueOf(spinInt));
+                editPrice.setText(String.valueOf(spinInt));
+            }
         }
     }
 
-    }
+
 
 
 
