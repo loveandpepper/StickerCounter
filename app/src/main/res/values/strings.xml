@@ -30,7 +30,7 @@
     <string name="callback_phonenum">Номер телефона</string>
     <string name="lastCalls">Последние 15 вызовов</string>
     <string name="callbackandexport">Экспорт и CallBack</string>
-    <string name="beznal_string">Б/Н </string>
+    <string name="beznal_string">Б/н</string>
     <string-array name="products_array">
         <item>Windows 10 Наклейка</item>
         <item>Windows 7 Наклейка</item>
