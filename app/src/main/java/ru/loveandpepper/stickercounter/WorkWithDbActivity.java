@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
@@ -37,6 +39,7 @@ public class WorkWithDbActivity extends AppCompatActivity {
     double value_usd;
     double value_usd_dhgate;
     public PieChartView pieChartView;
+    private ProgressBar progressBar;
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -51,7 +54,7 @@ public class WorkWithDbActivity extends AppCompatActivity {
         monthSells = findViewById(R.id.monthsells);
         marginaltotal = findViewById(R.id.marginal_textview);
         pieChartView = findViewById(R.id.pie_chart);
-
+        progressBar = findViewById(R.id.progressBar);
         usdValueChecker usdValueChecker = new usdValueChecker();
         usdValueChecker.execute();
     }
@@ -123,6 +126,8 @@ public class WorkWithDbActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             usdcurrency.setText("Курс загружается");
+            progressBar = findViewById(R.id.progressBar);
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -130,6 +135,7 @@ public class WorkWithDbActivity extends AppCompatActivity {
             super.onPostExecute(s);
             value_usd = s;
             calculateEverything();
+            progressBar.setVisibility(View.GONE);
         }
     }
 }

@@ -42,15 +42,16 @@ import java.util.Date;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener{
+public class MainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
     private Spinner spinnerOfProducts;
     public static SQLiteDatabase database;
     private EditText editPrice;
     private EditText editQuantity;
     private TextView date;
     public static SimpleDateFormat sdfDate;
-    private int spinInt;
     private Switch aSwitch;
+    private int price;
+    private int previousPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,22 +72,36 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
     }
 
-    public void priceSetterForItem(){
+    public void priceSetterForItem() {
         spinnerOfProducts.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {      //Listener для спиннера. Подставляет цену по умолчанию для продукта.
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 aSwitch.setChecked(false);
-                switch (i){
-                    case 0: editPrice.setText("1500"); break;
-                    case 1: editPrice.setText("1300"); break;
-                    case 2: editPrice.setText("1100"); break;
-                    case 3: editPrice.setText("1000"); break;
-                    case 4: editPrice.setText("1500"); break;
-                    case 5: editPrice.setText("1900"); break;
-                    case 6: editPrice.setText("2800"); break;
-                    case 7: editPrice.setText(null); break;
+                switch (i) {
+                    case 0:
+                    case 4:
+                        price = 1500;
+                        break;
+                    case 1:
+                        price = 1300;
+                        break;
+                    case 2:
+                        price = 1100;
+                        break;
+                    case 3:
+                        price = 1000;
+                        break;
+                    case 5:
+                        price = 1900;
+                        break;
+                    case 6:
+                        price = 2800;
+                        break;
+                    case 7:
+                        editPrice.setText(null);
+                        break;
                 }
-                spinInt = Integer.valueOf(String.valueOf(editPrice.getText()));
+                editPrice.setText(String.valueOf(price));
             }
 
             @Override
@@ -96,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
         });
     }
 
-    public void addOperation (int epr, int equ, String sop, View v){
+    public void addOperation(int epr, int equ, String sop, View v) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("product", sop);
         contentValues.put("price", epr);
@@ -130,11 +145,11 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                         })
                         .setNegativeButton("Всё правильно!", (dialog, id) -> {
                             addOperation(epr, equ, sop, v);
-                            dialog.dismiss();});
+                            dialog.dismiss();
+                        });
                 AlertDialog alert = builder.create();
                 alert.show();
-            }
-            else {
+            } else {
                 addOperation(epr, equ, sop, v);
             }
         } catch (Exception e) {
@@ -217,26 +232,24 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
         alertDialog.setPositiveButton("Удалить",
                 (dialog, which) -> {
-            try {
-                int id = Integer.parseInt(input.getText().toString());
-                Cursor testForExists = database.query(DataBaseOperations.DEFAULT_TABLE, new String[]{"_id"},
-                        "_id = ?", new String[] {String.valueOf(id)}, null, null, null);
-                if (testForExists.moveToFirst()){
-                    database.delete(DataBaseOperations.DEFAULT_TABLE, "_id = " + id, null);
-                updateStatField();
-                new ToastMaker().showToast(this, "Готово! :)");
-                }
-                else {
-                    new ToastMaker().showToast(this, "id не получилось найти :(");
-                    deleteEntry(view);
-                }
-                testForExists.close();
-            }
-            catch (Exception e){
-                new ToastMaker().showToast(this, "Пустой id!");
-                deleteEntry(view);
-            }
-        });
+                    try {
+                        int id = Integer.parseInt(input.getText().toString());
+                        Cursor testForExists = database.query(DataBaseOperations.DEFAULT_TABLE, new String[]{"_id"},
+                                "_id = ?", new String[]{String.valueOf(id)}, null, null, null);
+                        if (testForExists.moveToFirst()) {
+                            database.delete(DataBaseOperations.DEFAULT_TABLE, "_id = " + id, null);
+                            updateStatField();
+                            new ToastMaker().showToast(this, "Готово! :)");
+                        } else {
+                            new ToastMaker().showToast(this, "id не получилось найти :(");
+                            deleteEntry(view);
+                        }
+                        testForExists.close();
+                    } catch (Exception e) {
+                        new ToastMaker().showToast(this, "Пустой id!");
+                        deleteEntry(view);
+                    }
+                });
 
         alertDialog.setNegativeButton("Выйти",
                 (dialog, which) -> dialog.cancel());
@@ -257,17 +270,14 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        double processed = spinInt*0.94;
-        if (Integer.parseInt(String.valueOf(editPrice.getText())) != spinInt){
-            processed = Integer.parseInt(String.valueOf(editPrice.getText()))*0.94;}
         if (isChecked) {
-                editPrice.setText(String.valueOf((int)processed));
+            previousPrice = Integer.parseInt(editPrice.getText().toString());
+            editPrice.setText(String.valueOf((int) (previousPrice * 0.94)));
         } else {
-                editPrice.setText(String.valueOf(spinInt));
-            }
+            editPrice.setText(String.valueOf(previousPrice));
         }
     }
-
+}
 
 
 
