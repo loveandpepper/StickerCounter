@@ -49,7 +49,7 @@
         android:id="@+id/monthsells"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="5"
+        android:layout_weight="6"
         android:layout_margin="8dp"
         android:text="@string/month_sells" />
 
@@ -72,7 +72,7 @@
     <lecho.lib.hellocharts.view.PieChartView
         android:id="@+id/pie_chart"
         android:layout_width="match_parent"
-        android:layout_height="170dp"
-        android:layout_weight="6" />
+        android:layout_height="175dp"
+        android:layout_weight="8" />
 
 </LinearLayout>
